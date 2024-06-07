@@ -6,11 +6,56 @@ import pydicom
 from scipy import ndimage
 from scipy.stats import norm
 from scipy.stats import linregress
+import glob
+import sys
+from datetime import datetime
+import warnings
+from numpy import RankWarning
+import argparse
+import string
+import datetime
 
 DEBUG=0
+dirpath=''
+def debug_print(msg):
+    # Get the current line number
+    line_number = sys._getframe().f_lineno
+    print(f"Debug [{line_number}]: {msg}")
+
+parser = argparse.ArgumentParser(description="This script processes DICOM images in a  directory")
+parser.add_argument('-d', '--dir', type=str, required=False,
+                     help="Specify the path to the directory to process.")
+parser.add_argument('-v', '--verbose', action='store_true',
+                     help="Enable verbose mode for detailed output of the program's execution.")
+parser.add_argument('-D', '--debug', type=int, choices=[0, 1, 2, 3], default=0,
+                    help="Set the debug level: 0=none, 1=errors, 2=warnings, 3=info.")
+
+args = parser.parse_args()
+if args.debug == 0:
+    print("Debugging is off.")
+elif args.debug == 1:
+    print("Showing only error messages.")
+elif args.debug == 2:
+    print("Showing warnings and error messages.")
+elif args.debug == 3:
+    print("Showing informational, warning, and error messages.")
+
+if args.dir:
+    dirpath=args.dir+'/'
+    if not os.path.isdir(dirpath):
+        print(f"Error: The directory does not exist: "+args.dir)
+        sys.exit(1)
+else:
+    #dirpath="/data/"  #this is for negative dirpath testing only, change it if needed
+    dirpath="./data/"
+    if not os.path.isdir(dirpath):
+        print(f"Error: The default directory does not exist, please check the dirpath given")
+        sys.exit(1)
+
+#######################################################################################################
 
 def main():
-    data_path = './data/'
+    data_path = dirpath 
     log_path = './logdir'
     fnames = [f for f in os.listdir(data_path) if f.endswith('.IMA')]
     nn = len(fnames)
