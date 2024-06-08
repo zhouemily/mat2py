@@ -1,22 +1,30 @@
-# mat2py project: convert matlab script to python script for dicom analysis
+# Mat2Py Project: Convert MATLAB Script to Python Script for DICOM Analysis
 
-README for Mat2Py Project
-Mat2Py Project: Convert MATLAB Script to Python Script for DICOM Analysis
-Overview
+## Overview
+
 The Mat2Py project aims to convert MATLAB scripts to Python scripts for DICOM analysis. This project is designed to help users transition their DICOM image processing workflows from MATLAB to Python, taking advantage of Python's extensive libraries and ease of integration with other data processing tools.
 
-Features
-Convert MATLAB DICOM analysis scripts to Python
-Perform signal processing and statistical analysis on DICOM images
-Apply noise reduction techniques such as median and Gaussian filtering
-Analyze and compare results to ensure accuracy
-Requirements
-Python 3.x
-NumPy
-SciPy
-PyDicom
-Matplotlib (optional, for visualizing results)
+## Features
 
+- Convert MATLAB DICOM analysis scripts to Python
+- Perform signal processing and statistical analysis on DICOM images
+- Apply noise reduction techniques such as median and Gaussian filtering
+- Analyze and compare results to ensure accuracy
+
+## Requirements
+
+- Python 3.x
+- NumPy
+- SciPy
+- PyDicom
+- Matplotlib (optional, for visualizing results)
+
+## Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/your-username/mat2py.git
+   cd mat2py
 
 read_dicom.m and read_dicom.py:
 By reading the same DICOM file in both MATLAB and Python and printing a portion of the pixel values, 
