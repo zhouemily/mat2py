@@ -33,6 +33,6 @@ confirming that both environments correctly interpret the DICOM file. If there a
 it could indicate differences in how the libraries handle the file, which might require further investigation.
 
 ##Test output notes:<br>
--bash-5.1$ python3 diff_matlab_python.py
--The files are identical (ignoring spaces and newlines).
--(both matlab and python script read dicom file correctly: same results)
+-bash-5.1$ python3 diff_matlab_python.py<br>
+-The files are identical (ignoring spaces and newlines).<br>
+-(both matlab and python script read dicom file correctly: same results)<br>
