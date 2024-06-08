@@ -32,13 +32,14 @@ parser.add_argument('-D', '--debug', type=int, choices=[0, 1, 2, 3], default=0,
 
 args = parser.parse_args()
 if args.debug == 0:
-    print("Debugging is off.")
+    print("Starting script...")
 elif args.debug == 1:
     print("Showing only error messages.")
 elif args.debug == 2:
     print("Showing warnings and error messages.")
 elif args.debug == 3:
     print("Showing informational, warning, and error messages.")
+    DEBUG=1
 
 if args.dir:
     dirpath=args.dir+'/'
@@ -69,7 +70,8 @@ def main():
     nsl = 36
     sqrtnsl = np.sqrt(nsl)
     mtxsz = 64
-    print(mtxsz)
+    if args.debug > 0:
+        print("nsl="+str(nsl)+ " sqrtnsl="+str(sqrtnsl)+" mtxsz="+str(mtxsz))
     
     dinfo = pydicom.dcmread(os.path.join(data_path, fnames[0]))
     ncol = dinfo.Columns / sqrtnsl
@@ -77,20 +79,54 @@ def main():
     mm = min(ncol, nrow)
 
     tmp_mat = np.zeros((mtxsz, mtxsz, nsl, nn))
-    if DEBUG:
-        print("mtxsz, mtxsz, nsl, nn="+str(mtxsz)+" "+str(mtxsz)+" "+str(nsl)+" "+str(nn))
+    if args.debug >= 1:
+        print("ncol, nrow, mm ::"+str(ncol)+","+str(nrow)+","+str(mm))
+        print("tmp_mat(mtxsz, mtxsz, nsl, nn) :: "+str(mtxsz)+" "+str(mtxsz)+" "+str(nsl)+" "+str(nn))
 
     for ii in range(nn):
-        tmp = pydicom.dcmread(os.path.join(data_path, fnames[ii])).pixel_array
+        # Read the DICOM file and extract the pixel data
+        try:
+            dcm_path = os.path.join(data_path, fnames[ii])
+            dicom = pydicom.dcmread(dcm_path)
+            tmp = dicom.pixel_array
+            if ii == 0 and args.debug > 0:
+                print('Python Pixel Values for first dicom file fname[0] saved as python_pixels0.txt:')
+                np.savetxt('python_pixels0.txt', tmp[:100, :100], fmt='%d')
+        except Exception as e:
+            print(f"Error reading DICOM file {fnames[ii]}: {e}")
+            continue
+
         tmp2 = []
         cind = 0
+
+        # Split image data into chunks of size `mtxsz` rows
         while cind < tmp.shape[0]:
-            tmp2.append(tmp[cind:cind+mtxsz, :])
+            chunk = tmp[cind:cind + mtxsz, :]
+            tmp2.append(chunk)
             cind += mtxsz
-        tmp2 = np.concatenate(tmp2, axis=0)
-        tmp_mat[:, :, :, ii] = tmp2.reshape((mtxsz, mtxsz, nsl))
-        if DEBUG and ii==nn-1:
-            print(tmp_mat[0,:,:,ii])
+
+        # Concatenate chunks vertically to form a single array
+        try:
+            tmp2 = np.concatenate(tmp2, axis=0)
+        except ValueError as e:
+            print(f"Error concatenating chunks for file {fnames[ii]}: {e}")
+            continue
+
+        # Check if the reshaped dimensions match the expected shape
+        if tmp2.size != mtxsz * mtxsz * nsl:
+            print(f"Unexpected shape after reshaping for file {fnames[ii]}.")
+            continue
+
+        # Reshape and store the data in the 4D matrix
+        try:
+            tmp_mat[:, :, :, ii] = tmp2.reshape((mtxsz, mtxsz, nsl))
+        except ValueError as e:
+            print(f"Error reshaping or storing data for file {fnames[ii]}: {e}")
+            continue
+
+        # Debugging output
+        if DEBUG and ii == nn - 1:
+           print(tmp_mat[0, :, :, ii])
 
     cmxs = np.zeros(nsl)
     cmys = np.zeros(nsl)
@@ -140,8 +176,8 @@ def main():
         x = np.arange(1, nn + 1)
         y = time_N[ns, :]
         p = np.polyfit(x, y, 2)
-        #ya = np.polyval(p, x)
-        ya = p[0] * (x**2) + p[1] * x
+        #ya = np.polyval(p, x)  ##note:: this np.polyval function does not work well here
+        ya = p[0] * (x**2) + p[1] * x   ##note:: direct tranlate from matlab works well here
 
         for ii in range(nn):
             tmp_detrend[:, :, ns, ii] = tmp_mat[:, :, ns, ii] - ya[ii]
@@ -150,22 +186,7 @@ def main():
         if DEBUG:
             print(f'Polynomial coefficients for slice {ns}: {p}')
             print(f'Detrended values for slice {ns}: {tmp_detrend[:, :, ns, :]}')
-        """
-        tmp = msk_cm2[:, :, ns]
-        A = tmp.flatten().astype(bool)
-        for ii in range(nn):
-            B = tmp_mat[:, :, ns, ii].flatten()
-            C = B[A]
-            time_N[ns, ii] = np.mean(C)
 
-        x = np.arange(1, nn + 1)
-        y = time_N[ns, :]
-        p = np.polyfit(x, y, 2)
-        ya = p[0] * (x**2) + p[1] * x
-
-        for ii in range(nn):
-            tmp_detrend[:, :, ns, ii] = tmp_mat[:, :, ns, ii] - ya[ii]
-        """
         for ii in range(nn - 1):
             tmp = (tmp_detrend[:, :, ns, ii] - tmp_detrend[:, :, ns, ii + 1]) / np.sqrt(2)
             B = tmp.flatten()
@@ -181,13 +202,16 @@ def main():
     time_N = time_N[ss, :]
     tmp_detrend = tmp_detrend[:, :, ss, :]
 
-    xt = np.arange(1, nn + 1)
+    xt = np.arange(1, nn + 1) ##or range from 0 to nn (number of dicome files)
     yt = time_N
     p = np.polyfit(xt, yt, 2)
-    yp = p[0] * (xt**2) + p[1] * xt + p[2]
-    ya = p[0] * (xt**2) + p[1] * xt
+    yp = p[0] * (xt**2) + p[1] * xt     ##note:: better correlation achived
+    #yp = p[0] * (xt**2) + p[1] * xt + p[2]  ## direct translation from Matlab
+    ya = p[0] * (xt**2) + p[1] * xt ##note:: ya is not used later
 
-    spk_thrsh = 0.5
+    #spk_thrsh = 0.5 #matlab value 
+    #spk_thrsh = 0.8 
+    spk_thrsh = 1.0  ##note:: adjust the spk_thrsh to set proper sensitivity 
     A = ROIvar[ROIvar > spk_thrsh]
     SPK = len(A.flatten())
 
@@ -270,10 +294,10 @@ def main():
         timetxt = dinfo.InstanceCreationTime[:8]
         runtxt = ppath[-1]
         fid.write(f'{yeartxt}\t{monthtxt}\t{daytxt}\t{timetxt}\t{runtxt}\t{nn}\t{Smean:.1f}\t{Spk:.2f}\t{Srms:.2f}\t{SFNRi:.1f}\t{Rqq:.3f}\t{Wrdc:.3f}\t{SPK}\n')
+        print("DICOM InstanceCreationDate and InstanceCreationTime :: number of files :: Smean :: Spk :: Srms :: SFNRi :: Rqq :: WRDC :: SPK")
         print(f'{yeartxt}\t{monthtxt}\t{daytxt}\t{timetxt}\t{runtxt}\t{nn}\t{Smean:.1f}\t{Spk:.2f}\t{Srms:.2f}\t{SFNRi:.1f}\t{Rqq:.3f}\t{Wrdc:.3f}\t{SPK}\n')
 
     print('done')
 
 if __name__ == '__main__':
     main()
-
