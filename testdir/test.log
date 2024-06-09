@@ -1,0 +1,64 @@
+testcases for  stabcheck36_trio_CM2.py script
+show usage help menu:
+usage: stabcheck36_trio_CM2.py [-h] [-d DIR] [-v] [-D {0,1,2,3}]
+
+This script processes DICOM images in a directory
+
+options:
+  -h, --help            show this help message and exit
+  -d DIR, --dir DIR     Specify the path to the directory to process.
+  -v, --verbose         Enable verbose mode for detailed output of the
+                        program's execution.
+  -D {0,1,2,3}, --debug {0,1,2,3}
+                        Set the debug level: 0=none, 1=errors, 2=warnings,
+                        3=info.
+result and stability_history_2024.txt files are generated in ./logdir
+test with 64 random Dicom files with prefix: T_STAB_12_8_2023.MR.SUTTON_SEQTESTING.0004 
+Starting script...
+Slice 18 	 Mean = 435.5 	 Peak-to-peak % = 0.36 	 RMS % = 0.694 	 SNR = 275.372 	 Rqq = 1.000 	 RDC = 1.355 	 Spike Count = 0
+
+DICOM InstanceCreationDate and InstanceCreationTime :: number of files :: Smean :: Spk :: Srms :: SFNRi :: Rqq :: WRDC :: SPK
+	120	02	071938.6	y	64	435.5	0.36	0.69	275.4	1.000	1.355	0
+
+done
+test with 128 random Dicom files with prefix: T_STAB_12_8_2023.MR.SUTTON_SEQTESTING.0004 
+Starting script...
+Slice 18 	 Mean = 435.6 	 Peak-to-peak % = 0.39 	 RMS % = 1.035 	 SNR = 269.450 	 Rqq = 1.000 	 RDC = 1.242 	 Spike Count = 0
+
+DICOM InstanceCreationDate and InstanceCreationTime :: number of files :: Smean :: Spk :: Srms :: SFNRi :: Rqq :: WRDC :: SPK
+	120	02	071938.6	y	128	435.6	0.39	1.04	269.5	1.000	1.242	0
+
+done
+test with 256 random Dicom files with prefix: T_STAB_12_8_2023.MR.SUTTON_SEQTESTING.0004 
+Starting script...
+Slice 18 	 Mean = 435.6 	 Peak-to-peak % = 0.40 	 RMS % = 1.479 	 SNR = 267.538 	 Rqq = 1.000 	 RDC = 1.280 	 Spike Count = 0
+
+DICOM InstanceCreationDate and InstanceCreationTime :: number of files :: Smean :: Spk :: Srms :: SFNRi :: Rqq :: WRDC :: SPK
+	120	02	071458.6	y	256	435.6	0.40	1.48	267.5	1.000	1.280	0
+
+done
+test with 64 random Dicom files with prefix: T_STAB_12_8_2023.MR.SUTTON_SEQTESTING.0005 
+Starting script...
+Slice 18 	 Mean = 434.6 	 Peak-to-peak % = 0.32 	 RMS % = 0.682 	 SNR = 237.690 	 Rqq = 1.000 	 RDC = 1.087 	 Spike Count = 0
+
+DICOM InstanceCreationDate and InstanceCreationTime :: number of files :: Smean :: Spk :: Srms :: SFNRi :: Rqq :: WRDC :: SPK
+	120	02	072738.6	y	64	434.6	0.32	0.68	237.7	1.000	1.087	0
+
+done
+test with 128 random Dicom files with prefix: T_STAB_12_8_2023.MR.SUTTON_SEQTESTING.0005 
+Starting script...
+Slice 18 	 Mean = 434.6 	 Peak-to-peak % = 0.37 	 RMS % = 1.001 	 SNR = 233.503 	 Rqq = 1.000 	 RDC = 1.333 	 Spike Count = 0
+
+DICOM InstanceCreationDate and InstanceCreationTime :: number of files :: Smean :: Spk :: Srms :: SFNRi :: Rqq :: WRDC :: SPK
+	120	02	072738.6	y	128	434.6	0.37	1.00	233.5	1.000	1.333	0
+
+done
+test with 256 random Dicom files with prefix: T_STAB_12_8_2023.MR.SUTTON_SEQTESTING.0005 
+Starting script...
+Slice 18 	 Mean = 434.6 	 Peak-to-peak % = 0.37 	 RMS % = 1.385 	 SNR = 234.014 	 Rqq = 1.000 	 RDC = 1.394 	 Spike Count = 0
+
+DICOM InstanceCreationDate and InstanceCreationTime :: number of files :: Smean :: Spk :: Srms :: SFNRi :: Rqq :: WRDC :: SPK
+	120	02	072738.6	y	256	434.6	0.37	1.38	234.0	1.000	1.394	0
+
+done
+results and stability_history_2024.txt files are generated in ./logdir
